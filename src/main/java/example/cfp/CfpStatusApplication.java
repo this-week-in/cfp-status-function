@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 /**
  * This marks certain CFP links as processed.
+ *
  * @author <a href="mailto:josh@joshlong.com">Josh Long</a>
  */
 @Log
