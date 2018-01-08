@@ -9,7 +9,7 @@ BUILD_RESULT=$( mvn -DskipTests=true clean package )
 
 FUNCTION_NAME=cfp-status  # ${RANDOM}
 METHOD=ANY
-JAR_NAME=./target/demo-1.0.0.BUILD-SNAPSHOT-aws.jar
+JAR_NAME=./target/cfp-status-function-0.0.1-SNAPSHOT-aws.jar
 HANDLER_NAME=example.HelloHandler
 ENDPOINT_PATH_PART=${FUNCTION_NAME}
 REGION=us-east-1
