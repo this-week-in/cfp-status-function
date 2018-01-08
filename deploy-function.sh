@@ -10,7 +10,7 @@ BUILD_RESULT=$( mvn -DskipTests=true clean package )
 FUNCTION_NAME=cfp-status  # ${RANDOM}
 METHOD=ANY
 JAR_NAME=./target/cfp-status-function-0.0.1-SNAPSHOT-aws.jar
-HANDLER_NAME=example.HelloHandler
+HANDLER_NAME=example.cfp.CfpStatusHandler
 ENDPOINT_PATH_PART=${FUNCTION_NAME}
 REGION=us-east-1
 REST_API_NAME=${FUNCTION_NAME}
