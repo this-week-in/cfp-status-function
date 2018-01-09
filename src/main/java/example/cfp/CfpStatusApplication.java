@@ -1,21 +1,23 @@
 package example.cfp;
 
-import com.amazonaws.services.lambda.runtime.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestTemplate;
 import pinboard.Bookmark;
 import pinboard.PinboardClient;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,11 +30,6 @@ import java.util.stream.Stream;
 @Log
 @SpringBootApplication
 public class CfpStatusApplication {
-
-	@Bean
-	RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
 
 	@Bean
 	Function<CfpStatusRequest, CfpStatusResponse> function(CfpStatusService service) {
@@ -94,7 +91,10 @@ class CfpStatusService {
 			this.client.addPost(bookmark.getHref(), bookmark.getDescription(), bookmark.getDescription(),
 					tags, bookmark.getTime(), true, false, false);
 			return new CfpStatusResponse(true);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
+			String msg = NestedExceptionUtils.buildMessage("couldn't process the CFP status update", e);
+			log.info(msg);
 			return new CfpStatusResponse(false);
 		}
 	}
