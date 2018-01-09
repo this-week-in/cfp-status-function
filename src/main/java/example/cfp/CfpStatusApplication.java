@@ -49,7 +49,7 @@ class CfpStatusService {
 		this.client = client;
 	}
 
-	private String yearTag() {
+	private String getCurrentYearTag() {
 		return Integer.toString(
 				Instant.now().atZone(ZoneId.systemDefault()).getYear());
 	}
@@ -61,7 +61,7 @@ class CfpStatusService {
 				.of(allPosts)
 				.filter(bookmark -> Stream
 						.of(bookmark.getTags())
-						.filter(t -> t.equalsIgnoreCase(yearTag()))
+						.filter(t -> t.equalsIgnoreCase(getCurrentYearTag()))
 						.count() == 0
 				)
 				.collect(Collectors.toMap(Bookmark::getHash, x -> x));
@@ -86,7 +86,7 @@ class CfpStatusService {
 			Bookmark bookmark = bookmarks.get(request.getId());
 			Assert.notNull(bookmark, "couldn't find the `Bookmark` with ID " + request.getId());
 			log.info("updating CFP (" + bookmark.getHref() + ") having name " + bookmark.getDescription());
-			String[] tags = addTags(bookmark.getTags(), yearTag());
+			String[] tags = addTags(bookmark.getTags(), getCurrentYearTag());
 			this.client.addPost(bookmark.getHref(), bookmark.getDescription(), bookmark.getDescription(),
 					tags, bookmark.getTime(), true, false, false);
 			return new CfpStatusResponse(true);
