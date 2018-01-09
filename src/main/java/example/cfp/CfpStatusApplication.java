@@ -37,10 +37,9 @@ public class CfpStatusApplication {
 	}
 }
 
-@Service
 @Log
+@Service
 class CfpStatusService {
-
 
 	private final PinboardClient client;
 
@@ -78,7 +77,7 @@ class CfpStatusService {
 		return x.toArray(new String[x.size()]);
 	}
 
-	public CfpStatusResponse processCfpStatusRequest(CfpStatusRequest request) {
+	CfpStatusResponse processCfpStatusRequest(CfpStatusRequest request) {
 		try {
 			Assert.notNull(request, "you must provide a valid " + CfpStatusRequest.class.getName() + ".");
 			Map<String, Bookmark> bookmarks = this.bookmarks();
