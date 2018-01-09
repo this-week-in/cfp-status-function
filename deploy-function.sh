@@ -2,7 +2,7 @@
 
 ./clean.sh
 
-BUILD_RESULT=$( mvn -DskipTests=true clean package )
+BUILD_RESULT=$( mvn -o -DskipTests=true clean install )
 
 ## REFERENCES
 ## https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-custom-integrations.html
@@ -23,6 +23,7 @@ FUNCTION_ARN=$(
         --function-name ${FUNCTION_NAME} \
         --zip-file fileb://${JAR_NAME} \
         --memory-size 512 \
+        --environment Variables="{PINBOARD_TOKEN=${PINBOARD_TOKEN}}" \
         --role  ${FUNCTION_ROLE} \
         --handler ${HANDLER_NAME}  \
         --runtime java8 |  jq -r '.FunctionArn'
