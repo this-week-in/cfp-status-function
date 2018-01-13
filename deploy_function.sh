@@ -1,9 +1,13 @@
 #!/bin/bash
 
-download_aws(){
+install_aws_cli(){
 
     # todo
-    echo "need to download aws CLI"
+    echo "Installing AWS CLI.."
+    apk --no-cache update && \
+    apk --no-cache add python py-pip py-setuptools ca-certificates groff less && \
+    pip --no-cache-dir install awscli && \
+    rm -rf /var/cache/apk/*
 }
 
 clean(){
@@ -72,6 +76,9 @@ deploy_function(){
     deploy=$( aws apigateway create-deployment --rest-api-id ${rest_api_id} --stage-name prod --region ${region} )
     echo https://${rest_api_id}.execute-api.${region}.amazonaws.com/prod${path_part}
 }
+
+install_aws_cli
+
 
 clean
 deploy_function ${1:-my-function} example.cfp.CfpStatusHandler
