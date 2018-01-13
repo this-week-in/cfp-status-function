@@ -16,4 +16,4 @@ install:
 script:
 #  -  mvn -e verify deploy
   -  mvn -DskipTests clean install
-  -  depoy_function.sh cfp-status-function
+  -  ./deploy_function.sh cfp-status-function
