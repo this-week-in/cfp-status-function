@@ -18,6 +18,6 @@ before_install:
   - export PATH=$PATH:$HOME/.local/bin
 
 script:
-#  -  mvn -e verify deploy
-  - mvn -DskipTests clean install
+  -  mvn -e verify deploy
+#  - mvn -DskipTests clean install
   - ./deploy_function.sh cfp-status-function
