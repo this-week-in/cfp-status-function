@@ -68,6 +68,5 @@ deploy_function(){
     echo https://${rest_api_id}.execute-api.${region}.amazonaws.com/prod${path_part}
 }
 
-install_aws_cli
 clean
 deploy_function ${1:-my-function} example.cfp.CfpStatusHandler
