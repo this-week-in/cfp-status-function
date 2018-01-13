@@ -1,75 +1,70 @@
 #!/bin/bash
 
-./clean.sh
+clean(){
+    region=${AWS_REGION}
+    aws lambda list-functions --region $region | jq -r '.Functions[].FunctionName' | while read functionName ; do
+        aws lambda delete-function --function-name $functionName --region $region
+    done
+    aws apigateway get-rest-apis --region $region | jq -r '.items[].id' | while read rest_api_id ; do
+        aws apigateway delete-rest-api --region $region --rest-api-id $rest_api_id || echo "can't delete $rest_api_id ";
+    done
+}
 
-BUILD_RESULT=$( mvn -o -DskipTests=true clean install )
+deploy(){
 
-## REFERENCES
-## https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-custom-integrations.html
+    function_name=${1:-demo-function}
+    method=ANY
+    jar_name=`find . -iname "*aws.jar"`
+    handler_name=example.DemoHandler
+    endpoint_path_part=${function_name}
+    region=${AWS_REGION}
+    rest_api_name=${function_name}
+    function_role=arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-role
+    function_arn=$(
+        aws lambda create-function \
+            --region ${region} \
+            --timeout 300 \
+            --function-name ${function_name} \
+            --zip-file fileb://${jar_name} \
+            --memory-size 512 \
+            --environment Variables="{FOO=BAR}" \
+            --role  ${function_role} \
+            --handler ${handler_name}  \
+            --runtime java8 |  jq -r '.FunctionArn'
+    )
+    rest_api_id=$( aws apigateway create-rest-api --name ${rest_api_name} --region ${region} | jq -r '.id' )
+    resource_id=$( aws apigateway get-resources --rest-api-id ${rest_api_id} --region ${region} | jq -r '.items[].id' )
+    create_resource_result=` aws apigateway create-resource --rest-api-id ${rest_api_id} --region ${region} --parent-id ${resource_id} --path-part ${function_name}  `
+    path_part=$( echo ${create_resource_result}  | jq -r '.path' )
+    resource_id=$( echo  ${create_resource_result} | jq -r '.id' )
+    method_result=$( aws apigateway put-method --rest-api-id ${rest_api_id}  --region ${region}  --resource-id ${resource_id} --http-method ${method} --authorization-type "NONE" )
+    method_response_result=$( aws apigateway put-method-response --rest-api-id ${rest_api_id} --region ${region} --resource-id ${resource_id}  --http-method ${method} --status-code 200 )
+    integration_uri=arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${AWS_ACCOUNT_ID}:function:${function_name}/invocations
+    role_id=arn:aws:iam::960598786046:role/lambda-role
+    put_integration_result=$(
+        aws apigateway put-integration \
+            --region ${region} \
+            --rest-api-id ${rest_api_id} \
+            --resource-id ${resource_id} \
+            --http-method ${method} \
+            --type AWS \
+            --integration-http-method POST \
+            --uri ${integration_uri} \
+            --request-templates file://`pwd`/request-template.json \
+            --credentials $role_id
+    )
+    put_integration_response_result=$(
+        aws apigateway put-integration-response \
+            --region ${region} \
+            --rest-api-id ${rest_api_id} \
+            --resource-id ${resource_id} \
+            --http-method ANY \
+            --status-code 200 \
+            --selection-pattern ""
+    )
+    deploy=$( aws apigateway create-deployment --rest-api-id ${rest_api_id} --stage-name prod --region ${region} )
+    echo https://${rest_api_id}.execute-api.${region}.amazonaws.com/prod${path_part}
+}
 
-FUNCTION_NAME=cfp-status  # ${RANDOM}
-METHOD=ANY
-JAR_NAME=./target/cfp-status-function-0.0.1-SNAPSHOT-aws.jar
-HANDLER_NAME=example.cfp.CfpStatusHandler
-ENDPOINT_PATH_PART=${FUNCTION_NAME}
-REGION=us-east-1
-REST_API_NAME=${FUNCTION_NAME}
-FUNCTION_ROLE=arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-role
-
-FUNCTION_ARN=$(
-    aws lambda create-function \
-        --region ${REGION} \
-        --timeout 300 \
-        --function-name ${FUNCTION_NAME} \
-        --zip-file fileb://${JAR_NAME} \
-        --memory-size 512 \
-        --environment Variables="{PINBOARD_TOKEN=${PINBOARD_TOKEN}}" \
-        --role  ${FUNCTION_ROLE} \
-        --handler ${HANDLER_NAME}  \
-        --runtime java8 |  jq -r '.FunctionArn'
-)
-
-REST_API_ID=$( aws apigateway create-rest-api --name ${REST_API_NAME} --region ${REGION} | jq -r '.id' )
-
-RESOURCE_ID=$( aws apigateway get-resources --rest-api-id ${REST_API_ID} --region ${REGION} | jq -r '.items[].id' )
-
-CREATE_RESOURCE_RESULT=` aws apigateway create-resource --rest-api-id ${REST_API_ID} --region ${REGION} --parent-id ${RESOURCE_ID} --path-part ${FUNCTION_NAME}  `
-
-PATH_PART=$( echo $CREATE_RESOURCE_RESULT  | jq -r '.path' )
-
-RESOURCE_ID=$( echo  $CREATE_RESOURCE_RESULT | jq -r '.id' )
-
-METHOD_RESULT=$( aws apigateway put-method --rest-api-id $REST_API_ID  --region $REGION  --resource-id $RESOURCE_ID --http-method $METHOD --authorization-type "NONE" )
-METHOD_RESPONSE_RESULT=$( aws apigateway put-method-response --rest-api-id $REST_API_ID --region $REGION --resource-id $RESOURCE_ID  --http-method $METHOD --status-code 200 )
-
-
-INTEGRATION_URI=arn:aws:apigateway:${REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${REGION}:${AWS_ACCOUNT_ID}:function:${FUNCTION_NAME}/invocations
-
-ROLE_ID=arn:aws:iam::960598786046:role/lambda-role
-
-PUT_INTEGRATION_RESULT=$(
-    aws apigateway put-integration \
-        --region ${REGION} \
-        --rest-api-id ${REST_API_ID} \
-        --resource-id ${RESOURCE_ID} \
-        --http-method ${METHOD} \
-        --type AWS \
-        --integration-http-method POST \
-        --uri ${INTEGRATION_URI} \
-        --request-templates file://`pwd`/request-template.json \
-        --credentials $ROLE_ID
-)
-
-PUT_INTEGRATION_RESPONSE_RESULT=$(
-    aws apigateway put-integration-response \
-        --region ${REGION} \
-        --rest-api-id ${REST_API_ID} \
-        --resource-id ${RESOURCE_ID} \
-        --http-method ANY \
-        --status-code 200 \
-        --selection-pattern ""
-)
-
-DEPLOY=$( aws apigateway create-deployment --rest-api-id ${REST_API_ID} --stage-name prod --region ${REGION} )
-
-echo https://${REST_API_ID}.execute-api.${REGION}.amazonaws.com/prod${PATH_PART}
+clean
+deploy cfp-stats-fn
