@@ -10,6 +10,10 @@ cache:
   directories:
     - $HOME/.m2/repository/
 
+install:
+  - echo installing..
+
 script:
-  -  mvn -e verify deploy
-  -  ./depoy_function.sh cfp-status-function
+#  -  mvn -e verify deploy
+  -  mvn -DskipTests clean install
+  -  depoy_function.sh cfp-status-function

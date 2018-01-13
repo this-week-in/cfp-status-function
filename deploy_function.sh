@@ -78,7 +78,5 @@ deploy_function(){
 }
 
 install_aws_cli
-
-
 clean
 deploy_function ${1:-my-function} example.cfp.CfpStatusHandler
