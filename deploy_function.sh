@@ -1,14 +1,5 @@
 #!/bin/bash
 
-install_aws_cli(){
-
-    # todo
-    echo "Installing AWS CLI.."
-    apk --no-cache update && \
-    apk --no-cache add python py-pip py-setuptools ca-certificates groff less && \
-    pip --no-cache-dir install awscli && \
-    rm -rf /var/cache/apk/*
-}
 
 clean(){
     region=${AWS_REGION}
