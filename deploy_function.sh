@@ -1,5 +1,11 @@
 #!/bin/bash
 
+download_aws(){
+
+    # todo
+    echo "need to download aws CLI"
+}
+
 clean(){
     region=${AWS_REGION}
     aws lambda list-functions --region ${region} | jq -r '.Functions[].FunctionName' | while read fn_name ; do
