@@ -2,20 +2,21 @@
 
 clean(){
     region=${AWS_REGION}
-    aws lambda list-functions --region $region | jq -r '.Functions[].FunctionName' | while read functionName ; do
-        aws lambda delete-function --function-name $functionName --region $region
+    aws lambda list-functions --region ${region} | jq -r '.Functions[].FunctionName' | while read fn_name ; do
+        aws lambda delete-function --function-name ${fn_name} --region ${region}
     done
-    aws apigateway get-rest-apis --region $region | jq -r '.items[].id' | while read rest_api_id ; do
-        aws apigateway delete-rest-api --region $region --rest-api-id $rest_api_id || echo "can't delete $rest_api_id ";
+    aws apigateway get-rest-apis --region ${region} | jq -r '.items[].id' | while read rest_api_id ; do
+        aws apigateway delete-rest-api --region ${region} --rest-api-id ${rest_api_id} || echo "can't delete $rest_api_id ";
     done
 }
 
-deploy(){
+deploy_function(){
+    function_name=${1}
+    handler_name=${2}
 
-    function_name=${1:-demo-function}
+    echo "going to deploy ${function_name} .. "
     method=ANY
     jar_name=`find . -iname "*aws.jar"`
-    handler_name=example.DemoHandler
     endpoint_path_part=${function_name}
     region=${AWS_REGION}
     rest_api_name=${function_name}
@@ -67,4 +68,4 @@ deploy(){
 }
 
 clean
-deploy cfp-stats-fn
+deploy_function ${1:-my-function} example.cfp.CfpStatusHandler
