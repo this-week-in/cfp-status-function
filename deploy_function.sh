@@ -14,8 +14,6 @@ clean(){
 deploy_function(){
     function_name=${1}
     handler_name=${2}
-
-    echo "going to deploy ${function_name} .. "
     method=ANY
     jar_name=`find . -iname "*aws.jar"`
     endpoint_path_part=${function_name}
@@ -65,6 +63,8 @@ deploy_function(){
             --selection-pattern ""
     )
     deploy=$( aws apigateway create-deployment --rest-api-id ${rest_api_id} --stage-name prod --region ${region} )
+
+    echo "Deployed ${function_name}"
     echo https://${rest_api_id}.execute-api.${region}.amazonaws.com/prod${path_part}
 }
 
