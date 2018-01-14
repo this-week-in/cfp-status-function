@@ -34,7 +34,7 @@ class CfpStatusService(private val client: PinboardClient) {
 
 	fun processCfpStatusRequest(request: CfpStatusRequest): CfpStatusResponse {
 		try {
-			Assert.notNull(request, "you must provide a valid " + CfpStatusRequest::class.java.name + ".")
+			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
 			val bookmarks = this.bookmarks()
 			Assert.hasText(request.id, "the ID must be a valid ID")
 			val bookmark = bookmarks[request.id]
