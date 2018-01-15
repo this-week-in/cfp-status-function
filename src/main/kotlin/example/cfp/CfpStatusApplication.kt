@@ -40,12 +40,12 @@ class CfpStatusService(private val client: PinboardClient) {
 
 	fun processCfpStatusRequest(request: CfpStatusRequest): CfpStatusResponse {
 		try {
+			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
 			val bookmarks: Map<String, Bookmark> = this.client
 					.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
 					.filter { !it.tags.contains(currentYearTag) }
 					.map { Pair(it.hash!!, it) }
 					.toMap()
-			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
 			log("there are ${bookmarks.size} bookmarks returned.")
 			Assert.hasText(request.id, "the ID must be a valid ID")
 			log("the incoming ID is: ${request.id}")
