@@ -37,10 +37,16 @@ class CfpStatusService(private val client: PinboardClient) {
 	private val currentYearTag: String
 		get() = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).year)
 
+	private val bookmarks: Map<String, Bookmark>
+		get() = this.client
+				.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
+				.filter { !it.tags.contains(currentYearTag) }
+				.map { Pair(it.hash!!, it) }
+				.toMap()
+
 	fun processCfpStatusRequest(request: CfpStatusRequest): CfpStatusResponse {
 		try {
 			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
-			val bookmarks = this.bookmarks()
 			log("there are ${bookmarks.size} bookmarks returned.")
 			Assert.hasText(request.id, "the ID must be a valid ID")
 			log("the incoming ID is: ${request.id}")
@@ -54,21 +60,13 @@ class CfpStatusService(private val client: PinboardClient) {
 				log("updated the post with ID ${request.id}.")
 				return CfpStatusResponse(true)
 			}
-		}
-		catch (e: Exception) {
+		} catch (e: Exception) {
 			val message = NestedExceptionUtils.buildMessage("couldn't process the CFP status update", e)
 			log(message)
 			log.error(message, e)
 		}
 		return CfpStatusResponse(false)
 	}
-
-	private fun bookmarks(): Map<String, Bookmark> =
-			client
-					.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
-					.filter { !it.tags.contains(currentYearTag) }
-					.map { Pair(it.hash!!, it) }
-					.toMap()
 
 	private fun addTags(i: Array<String>?, vararg extra: String) =
 			(i ?: arrayOf()).toList().plus(Arrays.asList(*extra)).toTypedArray()
