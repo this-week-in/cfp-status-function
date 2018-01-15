@@ -34,13 +34,10 @@ class CfpStatusService(private val client: PinboardClient) {
 		log.info(msg)
 	}
 
-	private val currentYearTag: String
-		get() = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).year)
-
-
 	fun processCfpStatusRequest(request: CfpStatusRequest): CfpStatusResponse {
 		try {
 			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
+			val currentYearTag: String = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).year)
 			val bookmarks: Map<String, Bookmark> = this.client
 					.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
 					.filter { !it.tags.contains(currentYearTag) }
@@ -59,7 +56,8 @@ class CfpStatusService(private val client: PinboardClient) {
 				log("updated the post with ID ${request.id}.")
 				return CfpStatusResponse(true)
 			}
-		} catch (e: Exception) {
+		}
+		catch (e: Exception) {
 			val message = NestedExceptionUtils.buildMessage("couldn't process the CFP status update", e)
 			log(message)
 			log.error(message, e)
