@@ -27,7 +27,7 @@ deploy_function(){
             --function-name ${function_name} \
             --zip-file fileb://${jar_name} \
             --memory-size 512 \
-            --environment Variables="{FOO=BAR}" \
+            --environment Variables="{PINBOARD_TOKEN=${PINBOARD_TOKEN}}" \
             --role  ${function_role} \
             --handler ${handler_name}  \
             --runtime java8 |  jq -r '.FunctionArn'
@@ -69,4 +69,4 @@ deploy_function(){
 }
 
 clean
-deploy_function ${1:-my-function} example.cfp.CfpStatusHandler
+deploy_function ${1:-cfp-status-function} example.cfp.CfpStatusHandler
