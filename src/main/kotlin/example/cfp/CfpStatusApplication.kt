@@ -29,6 +29,11 @@ class CfpStatusService(private val client: PinboardClient) {
 
 	private val log = LogFactory.getLog(javaClass)
 
+	private fun log(msg: String) {
+		println(msg)
+		log.info(msg)
+	}
+
 	private val currentYearTag: String
 		get() = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).year)
 
@@ -36,17 +41,24 @@ class CfpStatusService(private val client: PinboardClient) {
 		try {
 			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
 			val bookmarks = this.bookmarks()
+			log("there are ${bookmarks.size} bookmarks returned.")
 			Assert.hasText(request.id, "the ID must be a valid ID")
+			log("the incoming ID is: ${request.id}")
 			val bookmark = bookmarks[request.id]
 			if (bookmark != null) {
 				Assert.notNull(bookmark, "couldn't find the `Bookmark` with ID " + request.id!!)
+				log("the incoming ID maps to an actual bookmark.")
 				val tags = addTags(bookmark.tags, currentYearTag)
 				this.client.addPost(bookmark.href!!, bookmark.description!!, bookmark.description!!,
 						tags, bookmark.time!!, true, false, false)
+				log("updated the post with ID ${request.id}.")
 				return CfpStatusResponse(true)
 			}
-		} catch (e: Exception) {
-			log.info(NestedExceptionUtils.buildMessage("couldn't process the CFP status update", e))
+		}
+		catch (e: Exception) {
+			val message = NestedExceptionUtils.buildMessage("couldn't process the CFP status update", e)
+			log(message)
+			log.error(message, e)
 		}
 		return CfpStatusResponse(false)
 	}
