@@ -66,7 +66,7 @@ class CfpStatusService(private val client: PinboardClient) {
 	private fun bookmarks(): Map<String, Bookmark> =
 			client
 					.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
-					.filter { it.tags.contains(currentYearTag) }
+					.filter { !it.tags.contains(currentYearTag) }
 					.map { Pair(it.hash!!, it) }
 					.toMap()
 
