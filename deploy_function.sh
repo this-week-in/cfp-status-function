@@ -69,4 +69,4 @@ deploy_function(){
 }
 
 clean
-deploy_function ${1:-cfp-status-function} example.cfp.CfpStatusHandler
+deploy_function ${1:-cfp-status-function} com.joshlong.cfp.CfpStatusHandler

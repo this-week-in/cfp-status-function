@@ -1,4 +1,4 @@
-package example.cfp
+package com.joshlong.cfp
 
 import org.springframework.cloud.function.adapter.aws.SpringBootRequestHandler
 

@@ -29,7 +29,7 @@
         <spring-cloud-function.version>1.0.0.BUILD-SNAPSHOT</spring-cloud-function.version>
         <spring-boot.version>2.0.0.M7</spring-boot.version>
         <spring-cloud-stream-servlet.version>1.0.0.BUILD-SNAPSHOT</spring-cloud-stream-servlet.version>
-        <start-class>example.cfp.CfpStatusApplication</start-class>
+        <start-class>com.joshlong.cfp.CfpStatusApplication</start-class>
         <aws-lambda-java-core.version>1.1.0</aws-lambda-java-core.version>
     </properties>
     <dependencies>

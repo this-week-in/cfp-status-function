@@ -10,14 +10,10 @@ cache:
   directories:
     - $HOME/.m2/repository/
 
-install:
-  - echo installing..
-
 before_install:
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
 
 script:
   -  mvn -e verify deploy
-#  - mvn -DskipTests clean install
   - ./deploy_function.sh cfp-status-function

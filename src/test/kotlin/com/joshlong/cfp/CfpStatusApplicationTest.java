@@ -1,6 +1,9 @@
-package example.cfp;
+package com.joshlong.cfp;
 
 import com.amazonaws.services.lambda.runtime.Context;
+import com.joshlong.cfp.CfpStatusApplication;
+import com.joshlong.cfp.CfpStatusHandler;
+import com.joshlong.cfp.CfpStatusRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package example.cfp
+package com.joshlong.cfp
 
 import org.apache.commons.logging.LogFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
