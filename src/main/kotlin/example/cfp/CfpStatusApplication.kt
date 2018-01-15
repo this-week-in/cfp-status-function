@@ -37,15 +37,14 @@ class CfpStatusService(private val client: PinboardClient) {
 	private val currentYearTag: String
 		get() = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).year)
 
-	private val bookmarks: Map<String, Bookmark>
-		get() = this.client
-				.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
-				.filter { !it.tags.contains(currentYearTag) }
-				.map { Pair(it.hash!!, it) }
-				.toMap()
 
 	fun processCfpStatusRequest(request: CfpStatusRequest): CfpStatusResponse {
 		try {
+			val bookmarks: Map<String, Bookmark> = this.client
+					.getAllPosts(arrayOf(CFP_TAG), 0, 100, null, null, 0)
+					.filter { !it.tags.contains(currentYearTag) }
+					.map { Pair(it.hash!!, it) }
+					.toMap()
 			Assert.notNull(request, "you must provide a valid ${CfpStatusRequest::class.java.name}.")
 			log("there are ${bookmarks.size} bookmarks returned.")
 			Assert.hasText(request.id, "the ID must be a valid ID")
