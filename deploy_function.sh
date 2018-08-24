@@ -19,7 +19,8 @@ deploy_function(){
     endpoint_path_part=${function_name}
     region=${AWS_REGION}
     rest_api_name=${function_name}
-    function_role=arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-role
+#    function_role=arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-role
+    function_role=arn:aws:iam::960598786046:role/service-role/cfp-status-function-role
     function_arn=$(
         aws lambda create-function \
             --region ${region} \
