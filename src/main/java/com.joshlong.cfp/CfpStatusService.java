@@ -25,15 +25,22 @@ public class CfpStatusService {
 		}
 
 		CfpStatusResponse processCfpStatusRequest(CfpStatusRequest request) {
+
 				Assert.notNull(request, "you must provide a valid " + CfpStatusRequest.class.getName() + '.');
+
 				String currentYearTag = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).getYear());
+
 				Map<String, Bookmark> bookmarks = Arrays
 					.stream(this.pinboardClient.getAllPosts(new String[]{CFP_TAG}, 0, 100, null, null, 0))
 					.filter(it -> !Arrays.asList(it.getTags()).contains(currentYearTag))
 					.collect(Collectors.toMap(Bookmark::getHash, it -> it));
+
 				Assert.hasText(request.getId(), "the ID must be a valid ID");
+
 				Bookmark bookmark = bookmarks.get(request.getId());
-				return Optional.ofNullable(bookmark).map(b -> {
+
+				return Optional
+					.ofNullable(bookmark).map(b -> {
 						String[] tags = addTags(b.getTags(), currentYearTag);
 						boolean added = this.pinboardClient.addPost(b.getHref(), b.getDescription(), b.getDescription(), tags, b.getTime(), true, false, false);
 						return new CfpStatusResponse(added);
