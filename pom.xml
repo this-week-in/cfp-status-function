@@ -16,20 +16,15 @@
     </parent>
 
     <properties>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <wrapper.version>1.0.11.RELEASE</wrapper.version>
         <aws-lambda-events.version>2.0.2</aws-lambda-events.version>
         <reactor.version>3.1.2.RELEASE</reactor.version>
-        <!--         <spring-cloud-function.version>2.0.0.BUILD-SNAPSHOT</spring-cloud-function.version>
-         -->
-        <start-class>com.joshlong.cfp.CfpStatusApplication
-        </start-class>
+        <wrapper.version>1.0.11.RELEASE</wrapper.version>
+        <start-class>com.joshlong.cfp.CfpStatusApplication</start-class>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
-
-
     </properties>
     <dependencies>
         <dependency>
@@ -93,7 +88,26 @@
     <build>
 
         <plugins>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>aws</shadedClassifierName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.boot.experimental</groupId>
+                        <artifactId>spring-boot-thin-layout</artifactId>
+                        <version>${wrapper.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
