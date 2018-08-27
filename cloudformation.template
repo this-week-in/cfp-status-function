@@ -3,6 +3,7 @@
   "Description": "AWS CloudFormation sample template that contains a single Lambda function behind an API Gateway",
   "Resources": {
     "GreetingLambda": {
+      "DependsOn" : "LambdaExecutionRole",
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -13,7 +14,12 @@
         "Handler": "com.joshlong.cfp.CfpStatusHandler",
         "MemorySize": 1024,
         "Runtime": "java8",
-        "Role": { "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]}
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaExecutionRole",
+            "Arn"
+          ]
+        }
       }
     },
     "LambdaExecutionRole": {
