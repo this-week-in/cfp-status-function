@@ -41,10 +41,10 @@ public class CfpStatusService {
 
 				return Optional
 					.ofNullable(bookmark).map(b -> {
-						String[] tags = addTags(b.getTags(), currentYearTag);
-						boolean added = this.pinboardClient.addPost(b.getHref(), b.getDescription(), b.getDescription(), tags, b.getTime(), true, false, false);
-						return new CfpStatusResponse(added);
-				})
+							String[] tags = addTags(b.getTags(), currentYearTag);
+							boolean added = this.pinboardClient.addPost(b.getHref(), b.getDescription(), b.getDescription(), tags, b.getTime(), true, false, false);
+							return new CfpStatusResponse(added);
+					})
 					.orElse(new CfpStatusResponse(false));
 		}
 

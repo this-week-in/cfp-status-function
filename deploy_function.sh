@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#https://blog.jayway.com/2016/08/17/introduction-to-cloudformation-for-api-gateway/
 
 clean(){
     region=${AWS_REGION}
@@ -20,28 +21,44 @@ deploy_function(){
     region=${AWS_REGION}
     rest_api_name=${function_name}
 #    function_role=arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-role
-    function_role=arn:aws:iam::960598786046:role/service-role/cfp-status-function-role
+    function_role=arn:aws:iam::${AWS_ACCOUNT_ID}:role/service-role/cfp-status-function-role
+
+
+
     function_arn=$(
         aws lambda create-function \
             --region ${region} \
             --timeout 300 \
             --function-name ${function_name} \
             --zip-file fileb://${jar_name} \
-            --memory-size 512 \
+            --memory-size 1024 \
+            --description "CFP Status Function" \
             --environment Variables="{PINBOARD_TOKEN=${PINBOARD_TOKEN}}" \
             --role  ${function_role} \
             --handler ${handler_name}  \
             --runtime java8 |  jq -r '.FunctionArn'
     )
     rest_api_id=$( aws apigateway create-rest-api --name ${rest_api_name} --region ${region} | jq -r '.id' )
+    echo "created REST API ID: $rest_api_id"
+
     resource_id=$( aws apigateway get-resources --rest-api-id ${rest_api_id} --region ${region} | jq -r '.items[].id' )
+
+    echo "created resource with id: $resource_id"
+
     create_resource_result=` aws apigateway create-resource --rest-api-id ${rest_api_id} --region ${region} --parent-id ${resource_id} --path-part ${function_name}  `
     path_part=$( echo ${create_resource_result}  | jq -r '.path' )
+
+    echo "created path part: $path_part "
     resource_id=$( echo  ${create_resource_result} | jq -r '.id' )
     method_result=$( aws apigateway put-method --rest-api-id ${rest_api_id}  --region ${region}  --resource-id ${resource_id} --http-method ${method} --authorization-type "NONE" )
     method_response_result=$( aws apigateway put-method-response --rest-api-id ${rest_api_id} --region ${region} --resource-id ${resource_id}  --http-method ${method} --status-code 200 )
+
+    echo "method result $method_result and method response $method_response_result "
     integration_uri=arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${region}:${AWS_ACCOUNT_ID}:function:${function_name}/invocations
-    role_id=arn:aws:iam::960598786046:role/lambda-role
+#    role_id=arn:aws:iam::960598786046:role/lambda-role
+    role_id=$function_role
+
+    echo "integration $integration_uri "
     put_integration_result=$(
         aws apigateway put-integration \
             --region ${region} \
@@ -54,6 +71,8 @@ deploy_function(){
             --request-templates file://`pwd`/request-template.json \
             --credentials $role_id
     )
+
+    echo "put integration result: $put_integration_result "
     put_integration_response_result=$(
         aws apigateway put-integration-response \
             --region ${region} \
@@ -63,8 +82,11 @@ deploy_function(){
             --status-code 200 \
             --selection-pattern ""
     )
+    echo "put integration response result : $put_integration_response_result "
+
     deploy=$( aws apigateway create-deployment --rest-api-id ${rest_api_id} --stage-name prod --region ${region} )
 
+    echo "deploy: $deploy "
     echo "Deployed ${function_name}"
     echo https://${rest_api_id}.execute-api.${region}.amazonaws.com/prod${path_part}
 }
