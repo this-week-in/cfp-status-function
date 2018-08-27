@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 /**
 	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
 	*/
-@Service
-public class CfpStatusService {
+
+  class CfpStatusService {
 
 		private final PinboardClient pinboardClient;
 
