@@ -19,7 +19,7 @@ aws s3 cp ${zip} s3://${bucket}/${zip_name}
 stack_name=CfpStatusFunction
 
 sam package --template-file ${this_dir}/template.yaml  --output-template-file ${template_output} --s3-bucket ${bucket}
-aws cloudformation deploy --template-file ${template_output} --stack-name $stack_name --capabilities CAPABILITY_IAM
+aws cloudformation deploy --template-file ${template_output} --stack-name $stack_name --capabilities CAPABILITY_IAM --region $AWS_REGION
 
 fn_name=$( aws lambda list-functions | jq '.Functions[].FunctionName' -r | grep ${stack_name} | uniq )
-aws lambda update-function-configuration --function-name ${fn_name} --environment Variables={PINBOARD_TOKEN=${PINBOARD_TOKEN}}
+aws lambda update-function-configuration --function-name ${fn_name} --environment Variables={PINBOARD_TOKEN=${PINBOARD_TOKEN}} --region $AWS_REGION
