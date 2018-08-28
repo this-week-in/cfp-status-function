@@ -33,7 +33,7 @@ Outputs:
 
   CfpStatusApi:
     Description: "API Gateway endpoint URL for Prod stage for CFP Status function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/process/"
 
   CfpStatusFunction:
     Description: "CFP Status Lambda Function ARN"
