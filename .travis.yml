@@ -9,10 +9,12 @@ jdk:
 cache:
   directories:
     - $HOME/.m2/repository/
+    - $HOME/.pip/repository/
 
 before_install:
-  - pip install --user awscli==1.16.1
-  - pip install --user aws-sam-cli==0.5.0
+  - mkdir -p $HOME/.pip/repository/
+  - pip install --cache-dir $HOME/.pip/repository/ --user awscli==1.16.1
+  - pip install --cache-dir $HOME/.pip/repository/ --user aws-sam-cli==0.5.0
   - export PATH=$PATH:$HOME/.local/bin
 
 script:
