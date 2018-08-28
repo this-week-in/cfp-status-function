@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
 	*/
 
-  class CfpStatusService {
+class CfpStatusService {
 
 		private final PinboardClient pinboardClient;
 
@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 
 				Assert.notNull(request, "you must provide a valid " + CfpStatusRequest.class.getName() + '.');
 
-				String currentYearTag = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).getYear());
+				String currentYearTag = Integer
+					.toString(Instant.now().atZone(ZoneId.systemDefault()).getYear());
 
 				Map<String, Bookmark> bookmarks = Arrays
 					.stream(this.pinboardClient.getAllPosts(new String[]{CFP_TAG}, 0, 100, null, null, 0))
