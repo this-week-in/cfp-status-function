@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 /**
 	* @author <a href="mailto:josh@joshlong.com">Josh Long</a>
 	*/
-@Service
-public class CfpStatusService {
+
+class CfpStatusService {
 
 		private final PinboardClient pinboardClient;
 
@@ -28,7 +28,8 @@ public class CfpStatusService {
 
 				Assert.notNull(request, "you must provide a valid " + CfpStatusRequest.class.getName() + '.');
 
-				String currentYearTag = Integer.toString(Instant.now().atZone(ZoneId.systemDefault()).getYear());
+				String currentYearTag = Integer
+					.toString(Instant.now().atZone(ZoneId.systemDefault()).getYear());
 
 				Map<String, Bookmark> bookmarks = Arrays
 					.stream(this.pinboardClient.getAllPosts(new String[]{CFP_TAG}, 0, 100, null, null, 0))
@@ -41,10 +42,10 @@ public class CfpStatusService {
 
 				return Optional
 					.ofNullable(bookmark).map(b -> {
-						String[] tags = addTags(b.getTags(), currentYearTag);
-						boolean added = this.pinboardClient.addPost(b.getHref(), b.getDescription(), b.getDescription(), tags, b.getTime(), true, false, false);
-						return new CfpStatusResponse(added);
-				})
+							String[] tags = addTags(b.getTags(), currentYearTag);
+							boolean added = this.pinboardClient.addPost(b.getHref(), b.getDescription(), b.getDescription(), tags, b.getTime(), true, false, false);
+							return new CfpStatusResponse(added);
+					})
 					.orElse(new CfpStatusResponse(false));
 		}
 

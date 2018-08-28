@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  CfpStatusFunction
+
+  SAM/CloudFormation template describing a simple lambda to update the status of certain bookmarks in Pinboard
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+
+
+Resources:
+  CfpStatusFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: target/cfp-status-function-0.0.1-SNAPSHOT-aws.jar
+      Handler: com.joshlong.cfp.CfpStatusHandler::handleRequest
+      MemorySize: 1024
+      Runtime: java8
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          PINBOARD_TOKEN: NA # this should be provided as an environment variable. See the `deploy.sh` script for how i reconfigure this value from the shell
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello
+            Method: get
+
+Outputs:
+
+  CfpStatusApi:
+    Description: "API Gateway endpoint URL for Prod stage for CFP Status function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+
+  CfpStatusFunction:
+    Description: "CFP Status Lambda Function ARN"
+    Value: !GetAtt CfpStatusFunction.Arn
+
+  CfpStatusFunctionIamRole:
+    Description: "Implicit IAM Role created for CFP Status function"
+    Value: !GetAtt CfpStatusFunctionRole.Arn
