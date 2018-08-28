@@ -21,5 +21,5 @@ stack_name=CfpStatusFunction
 sam package --template-file ${this_dir}/template.yaml  --output-template-file ${template_output} --s3-bucket ${bucket}
 aws cloudformation deploy --template-file ${template_output} --stack-name $stack_name --capabilities CAPABILITY_IAM --region $AWS_REGION
 
-fn_name=$( aws lambda list-functions | jq '.Functions[].FunctionName' -r | grep ${stack_name} | uniq )
-aws lambda update-function-configuration --function-name ${fn_name} --environment Variables={PINBOARD_TOKEN=${PINBOARD_TOKEN}} --region $AWS_REGION
+fn_name=$( aws lambda list-functions  --region $AWS_REGION | jq '.Functions[].FunctionName' -r | grep ${stack_name} | uniq )
+aws lambda update-function-configuration  --region $AWS_REGION --function-name ${fn_name} --environment Variables={PINBOARD_TOKEN=${PINBOARD_TOKEN}}
