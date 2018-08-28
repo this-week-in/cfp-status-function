@@ -23,17 +23,17 @@ Resources:
         Variables:
           PINBOARD_TOKEN: NA # this should be provided as an environment variable. See the `deploy.sh` script for how i reconfigure this value from the shell
       Events:
-        HelloWorld:
+        CfpStatusProcessedForTheYear:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /hello
+            Path: /process-cfp-status-for-the-year
             Method: get
 
 Outputs:
 
   CfpStatusApi:
     Description: "API Gateway endpoint URL for Prod stage for CFP Status function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/process/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/prod/process-cfp-status-for-the-year/"
 
   CfpStatusFunction:
     Description: "CFP Status Lambda Function ARN"
