@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CfpStatusResponse {
 		private boolean processed;
+
 }
