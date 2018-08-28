@@ -11,9 +11,10 @@ cache:
     - $HOME/.m2/repository/
 
 before_install:
-  - pip install --user awscli==1.15.60
+  - pip install --user awscli==1.16.1
+  - pip install --user aws-sam-cli==0.5.0
   - export PATH=$PATH:$HOME/.local/bin
 
 script:
   -  mvn -e verify deploy
-  - ./deploy_function.sh cfp-status-function
+  - ./deploy.sh
