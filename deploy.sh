@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-echo "announcing the current botocore version."
-python -c "import botocore; print('%s: %s' % (botocore.__file__, botocore.__version__))"
+#echo "announcing the current botocore version."
+#python -c "import botocore; print('%s: %s' % (botocore.__file__, botocore.__version__))"
 
 this_dir=`dirname $0`
 mkdir -p  ${this_dir}/target
