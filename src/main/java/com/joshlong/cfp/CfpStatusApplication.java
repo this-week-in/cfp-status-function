@@ -20,7 +20,6 @@ import java.util.function.Function;
 @SpringBootApplication
 public class CfpStatusApplication {
 
-		private final Log log = LogFactory.getLog(getClass());
 		private final ObjectMapper objectMapper;
 
 		public CfpStatusApplication(ObjectMapper objectMapper) {
@@ -56,7 +55,7 @@ public class CfpStatusApplication {
 				}
 		}
 
-		public static void main(String args[]) {
+		public static void main(String[] args) {
 				SpringApplication.run(CfpStatusApplication.class, args);
 		}
 }

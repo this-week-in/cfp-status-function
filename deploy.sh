@@ -7,8 +7,6 @@ this_dir=`dirname $0`
 mkdir -p  ${this_dir}/target
 tmp_dir=${this_dir}/target
 
-mvn -DskipTests=true clean package
-
 zip_name=deployment.zip
 zip=${tmp_dir}/${zip_name}
 template_output=${tmp_dir}/output.yaml
