@@ -18,7 +18,7 @@ Resources:
       CodeUri: target/cfp-status-function-0.0.1-SNAPSHOT-aws.jar
       Handler: com.joshlong.cfp.CfpStatusHandler::handleRequest
       MemorySize: 1024
-      Runtime: java8
+      Runtime: java11
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           PINBOARD_TOKEN: NA # this should be provided as an environment variable. See the `deploy.sh` script for how i reconfigure this value from the shell
